@@ -18,13 +18,11 @@ const ContactModal = lazy(() => import('./components/common/ContactModal').then(
 const ProjectsSection = lazy(() => import('./components/sections/ProjectsSection').then((module) => ({ default: module.ProjectsSection })));
 const ProjectModal = lazy(() => import('./components/common/ProjectModal').then((module) => ({ default: module.ProjectModal })));
 const CvModal = lazy(() => import('./components/common/CvModal').then((module) => ({ default: module.CvModal })));
-const ShowreelModal = lazy(() => import('./components/common/ShowreelModal').then((module) => ({ default: module.ShowreelModal })));
 
 function PortfolioContent() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isCvOpen, setIsCvOpen] = useState(false);
-  const [isShowreelOpen, setIsShowreelOpen] = useState(false);
-  const [mountedModals, setMountedModals] = useState({ contact: false, cv: false, showreel: false });
+  const [mountedModals, setMountedModals] = useState({ contact: false, cv: false });
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [isProjectOpen, setIsProjectOpen] = useState(false);
   const [loadProjects, setLoadProjects] = useState(false);
@@ -54,10 +52,6 @@ function PortfolioContent() {
     setMountedModals((current) => ({ ...current, cv: true }));
     setIsCvOpen(true);
   };
-  const openShowreel = () => {
-    setMountedModals((current) => ({ ...current, showreel: true }));
-    setIsShowreelOpen(true);
-  };
   const openProject = (project: ProjectItem) => {
     setSelectedProject(project);
     setIsProjectOpen(true);
@@ -74,7 +68,6 @@ function PortfolioContent() {
       {/* 1. Hero Section */}
       <HeroSection
         onContactClick={openContact}
-        onShowreelClick={openShowreel}
       />
 
       {/* 2. Projects Section (كل الأعمال في البورتفوليو) */}
@@ -102,7 +95,6 @@ function PortfolioContent() {
       <Suspense fallback={null}>
         {mountedModals.contact && <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
         {mountedModals.cv && <CvModal isOpen={isCvOpen} onClose={() => setIsCvOpen(false)} />}
-        {mountedModals.showreel && <ShowreelModal isOpen={isShowreelOpen} onClose={() => setIsShowreelOpen(false)} />}
         {selectedProject && (
           <ProjectModal
             project={selectedProject}

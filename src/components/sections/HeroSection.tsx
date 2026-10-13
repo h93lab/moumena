@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
-import { Camera, Play } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { ContactButton } from '../common/Buttons';
 import { PORTFOLIO_DATA } from '../../data/portfolioData';
@@ -9,12 +9,10 @@ import heroPortraitImg from '../../assets/images/hero-portrait.webp';
 
 interface HeroSectionProps {
   onContactClick: () => void;
-  onShowreelClick: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   onContactClick,
-  onShowreelClick,
 }) => {
   const { lang, t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -148,26 +146,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {t.hero.bio}
         </motion.p>
 
-        {/* Right CTA Actions: Watch Showreel + Contact Button */}
+        {/* Contact action */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="flex items-center justify-center flex-wrap gap-3 sm:gap-4"
         >
-          {/* Watch Showreel Pill */}
-          <button
-            onClick={onShowreelClick}
-            data-cursor="PLAY"
-            className="inline-flex items-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-xs sm:text-sm font-medium uppercase tracking-wider text-white backdrop-blur-md transition-all duration-200 cursor-pointer shadow-lg group"
-          >
-            <div className="w-5 h-5 rounded-full bg-[#B600A8] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-              <Play className="w-2.5 h-2.5 fill-white ml-0.5" />
-            </div>
-            <span>{t.hero.showreelBtn}</span>
-          </button>
-
-          {/* Contact Me Button */}
           <ContactButton onClick={onContactClick} label={t.hero.contactBtn} />
         </motion.div>
       </div>

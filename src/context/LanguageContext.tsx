@@ -14,7 +14,6 @@ interface Translations {
     greeting: string;
     bio: string;
     contactBtn: string;
-    showreelBtn: string;
   };
   trust: {
     heading: string;
@@ -83,7 +82,6 @@ const translations: Record<Language, Translations> = {
       greeting: "I'm, Moumena",
       bio: 'An art director & senior designer driven by crafting striking brand identities and unforgettable visual experiences',
       contactBtn: 'Contact Me',
-      showreelBtn: 'Watch Showreel',
     },
     trust: {
       heading: 'Trusted by Leading UAE Government Entities & Global Brands',
@@ -150,7 +148,6 @@ const translations: Record<Language, Translations> = {
       greeting: 'أنا، مؤمنة',
       bio: 'مخرجة إبداعية ومصممة أولى متخصصة في صناعة الهويات البصرية والحملات المؤثرة والتجارب البصرية الاستثنائية',
       contactBtn: 'تواصل معي',
-      showreelBtn: 'شاهد الشو ريل',
     },
     trust: {
       heading: 'شريك إبداعي معتمد لأبرز الجهات الحكومية والمؤسسات في الإمارات',
