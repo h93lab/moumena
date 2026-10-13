@@ -18,13 +18,6 @@ export interface ProjectItem {
   year: string;
 }
 
-export interface ServiceItem {
-  number: string;
-  title: string;
-  description: string;
-  skills: string[];
-}
-
 export interface CareerMilestone {
   period: string;
   periodAr: string;
@@ -229,44 +222,6 @@ export const PORTFOLIO_DATA = {
     lego: "https://shrug-person-78902957.figma.site/_components/v2/ebb2b8f25d8e24d5f0a5ca8af4c950de81aa2fd7/lego_icon-1.703bb594.png",
     group3d: "https://shrug-person-78902957.figma.site/_components/v2/ebb2b8f25d8e24d5f0a5ca8af4c950de81aa2fd7/Group_134-1.2e04f3ce.png",
   },
-
-  services: [
-    {
-      number: "01",
-      title: "Art Direction & Creative Strategy",
-      description:
-        "Strategic creative leadership translating ambitious brand objectives into powerful, unified visual narratives across digital platforms and live events.",
-      skills: ["Creative Direction", "Visual Storytelling", "Campaign Architecture"],
-    },
-    {
-      number: "02",
-      title: "Motion Graphics & Video Production",
-      description:
-        "High-impact 2D/3D motion graphics, kinetic typography, and post-production video editing tailored for viral social campaigns and royal announcements.",
-      skills: ["After Effects", "Premiere Pro", "3D Motion", "Kinetic Typography"],
-    },
-    {
-      number: "03",
-      title: "Brand Identity & Design Systems",
-      description:
-        "Crafting complete, timeless visual identities — from logos, color physics, and typography scales to robust guidelines that define category leaders.",
-      skills: ["Brand Guidelines", "Design Systems", "Iconography", "Typography"],
-    },
-    {
-      number: "04",
-      title: "Social Media Campaigns & Infographics",
-      description:
-        "Dynamic digital campaigns, interactive carousel suites, and crystal-clear data infographics that captivate audiences and drive measurable engagement.",
-      skills: ["Social Media Direction", "Data Infographics", "Healthcare Awareness"],
-    },
-    {
-      number: "05",
-      title: "Event Branding & Spatial Print",
-      description:
-        "Comprehensive VIP event materials — from monumental media backdrops and stage typography to VIP agendas, badges, and exhibition spaces.",
-      skills: ["Event Architecture", "Print Production", "Spatial Branding", "Packaging"],
-    },
-  ] as ServiceItem[],
 
   projects: [
     // 01. MOHAP COVID-19 & Royal Tweet

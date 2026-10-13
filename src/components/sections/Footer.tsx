@@ -12,7 +12,7 @@ export const Footer: React.FC<FooterProps> = ({ onContactClick }) => {
   };
 
   return (
-    <footer className="w-full bg-[#080808] border-t border-white/5 py-12 px-6 md:px-12 text-[#D7E2EA] z-30 relative">
+    <footer className="w-full bg-[#0C0C0C] pt-16 sm:pt-20 pb-10 px-6 md:px-12 text-[#D7E2EA] relative">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
           <span className="text-xl font-bold uppercase tracking-wider text-white">
@@ -55,7 +55,7 @@ export const Footer: React.FC<FooterProps> = ({ onContactClick }) => {
         </button>
       </div>
 
-      <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+      <div className="max-w-6xl mx-auto mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
         <span>© {new Date().getFullYear()} {PORTFOLIO_DATA.profile.name}. All rights reserved.</span>
         <span className="mt-2 sm:mt-0">© {new Date().getFullYear()} H93Lab.com. All rights reserved.</span>
       </div>

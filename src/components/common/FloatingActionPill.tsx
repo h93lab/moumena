@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { FileText, Globe } from 'lucide-react';
@@ -9,13 +9,25 @@ interface FloatingActionPillProps {
 
 export const FloatingActionPill: React.FC<FloatingActionPillProps> = ({ onCvClick }) => {
   const { lang, toggleLang } = useLanguage();
+  const [heroVisible, setHeroVisible] = useState(true);
+
+  useEffect(() => {
+    const hero = document.getElementById('hero');
+    if (!hero || !('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setHeroVisible(entry.intersectionRatio >= 0.25);
+    }, { threshold: [0, 0.25] });
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.8 }}
-      className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 select-none"
+      className={`fixed right-6 sm:right-8 lg:top-auto lg:bottom-8 z-40 select-none ${heroVisible ? 'top-16 sm:top-40 bottom-auto' : 'bottom-6 top-auto'}`}
     >
       <div className="flex items-center bg-[#101217]/90 backdrop-blur-xl border border-white/20 rounded-full px-2 py-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.7)] hover:border-white/40 transition-all duration-300">
         {/* CV Action */}

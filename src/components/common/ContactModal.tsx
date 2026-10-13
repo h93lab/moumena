@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Phone, MapPin, Copy, Check, Send } from 'lucide-react';
 import { PORTFOLIO_DATA } from '../../data/portfolioData';
 import { useLanguage } from '../../context/LanguageContext';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -13,7 +14,10 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
   const { lang, t } = useLanguage();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [formSent, setFormSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const dialogRef = useModalAccessibility(isOpen, onClose);
 
   const copyEmail = () => {
     navigator.clipboard.writeText(PORTFOLIO_DATA.profile.email);
@@ -21,15 +25,27 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
     setTimeout(() => setCopiedEmail(false), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) return;
-    setFormSent(true);
-    setTimeout(() => {
-      setFormSent(false);
+    if (isSending) return;
+    setIsSending(true);
+    setSendError(false);
+    try {
+      const website = new FormData(e.currentTarget).get('website');
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, website }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok !== true) throw new Error('Message delivery failed');
       setFormData({ name: '', email: '', message: '' });
-      onClose();
-    }, 2200);
+      setFormSent(true);
+    } catch {
+      setSendError(true);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -47,6 +63,11 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 
           {/* Modal Card */}
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contact-dialog-title"
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -61,7 +82,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                 <span className="text-xs uppercase tracking-widest text-[#B600A8] font-semibold">
                   {t.contact.badge}
                 </span>
-                <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white mt-1">
+                <h3 id="contact-dialog-title" className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white mt-1">
                   {t.contact.title}
                 </h3>
               </div>
@@ -132,12 +153,15 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3.5">
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                 <div>
-                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1">
+                  <label htmlFor="contact-name" className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1">
                     {t.contact.nameLabel}
                   </label>
                   <input
                     type="text"
+                    id="contact-name"
+                    maxLength={120}
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -147,11 +171,13 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1">
+                  <label htmlFor="contact-email" className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1">
                     {t.contact.emailLabel}
                   </label>
                   <input
                     type="email"
+                    id="contact-email"
+                    maxLength={254}
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -161,17 +187,29 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1">
+                  <label htmlFor="contact-message" className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-1">
                     {t.contact.msgLabel}
                   </label>
                   <textarea
+                    id="contact-message"
                     rows={3}
+                    required
+                    maxLength={5000}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Tell me about your upcoming campaign, brand project, or motion graphics vision..."
                     className="w-full bg-[#181A20] border border-[#2E333D] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#B600A8] transition-colors resize-none"
                   />
                 </div>
+
+                {sendError && (
+                  <p role="alert" className="text-sm text-rose-300">
+                    {t.contact.sendError}{' '}
+                    <a className="underline underline-offset-2" href={`mailto:${PORTFOLIO_DATA.profile.email}`}>
+                      {t.contact.emailFallback}
+                    </a>
+                  </p>
+                )}
 
                 <div className="pt-2 flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-xs text-slate-400">
@@ -181,12 +219,14 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-white text-sm font-medium tracking-wide uppercase transition-all duration-200 outline-2 outline-white -outline-offset-3 cursor-pointer"
+                    disabled={isSending}
+                    aria-busy={isSending}
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-white text-sm font-medium tracking-wide uppercase transition-all duration-200 outline-2 outline-white -outline-offset-3 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
                     style={{
                       background: 'linear-gradient(123deg, #18011F 7%, #B600A8 37%, #7621B0 72%, #BE4C00 100%)',
                     }}
                   >
-                    <span>{t.contact.sendBtn}</span>
+                    <span>{isSending ? t.contact.sending : t.contact.sendBtn}</span>
                     <Send className="w-3.5 h-3.5" />
                   </button>
                 </div>

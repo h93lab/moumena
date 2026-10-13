@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause, Volume2, VolumeX, Maximize2, Sparkles, Film } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 
 interface ShowreelModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ShowreelModalProps {
 
 export const ShowreelModal: React.FC<ShowreelModalProps> = ({ isOpen, onClose }) => {
   const { lang } = useLanguage();
+  const dialogRef = useModalAccessibility(isOpen, onClose);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [activeChapter, setActiveChapter] = useState(0);
@@ -81,6 +83,11 @@ export const ShowreelModal: React.FC<ShowreelModalProps> = ({ isOpen, onClose })
 
           {/* Modal Container */}
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="showreel-dialog-title"
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 20 }}
@@ -90,7 +97,7 @@ export const ShowreelModal: React.FC<ShowreelModalProps> = ({ isOpen, onClose })
             <div className="flex items-center justify-between px-6 sm:px-8 py-4 border-b border-white/10 bg-[#14151B]">
               <div className="flex items-center gap-2.5">
                 <Film className="w-5 h-5 text-[#B600A8]" />
-                <span className="text-xs uppercase tracking-widest font-bold text-white">
+                <span id="showreel-dialog-title" className="text-xs uppercase tracking-widest font-bold text-white">
                   Motion Graphics &amp; Video Showreel
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">

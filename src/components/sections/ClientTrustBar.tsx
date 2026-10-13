@@ -90,7 +90,7 @@ export const ClientTrustBar: React.FC = () => {
   ];
 
   return (
-    <section className="relative w-full bg-[#0A0B0E] border-y border-white/10 py-20 sm:py-24 md:py-28 px-5 sm:px-8 md:px-12 z-20 overflow-hidden select-none">
+    <section className="relative w-full bg-[#0C0C0C] py-20 sm:py-24 md:py-28 px-5 sm:px-8 md:px-12 overflow-hidden select-none">
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#B600A8]/10 blur-[120px] pointer-events-none rounded-full" />
 

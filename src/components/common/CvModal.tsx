@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Printer, Download, Briefcase, GraduationCap, Wrench, Sparkles, MapPin, Mail, Phone } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { PORTFOLIO_DATA } from '../../data/portfolioData';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 
 interface CvModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface CvModalProps {
 
 export const CvModal: React.FC<CvModalProps> = ({ isOpen, onClose }) => {
   const { lang, t } = useLanguage();
+  const dialogRef = useModalAccessibility(isOpen, onClose);
 
   const handlePrint = () => {
     window.print();
@@ -91,6 +93,11 @@ export const CvModal: React.FC<CvModalProps> = ({ isOpen, onClose }) => {
 
           {/* Modal Container */}
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cv-dialog-title"
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -102,7 +109,7 @@ export const CvModal: React.FC<CvModalProps> = ({ isOpen, onClose }) => {
                 <span className="text-[11px] uppercase tracking-widest text-[#B600A8] font-bold">
                   {t.cv.title}
                 </span>
-                <h3 className="text-xl sm:text-2xl font-black text-white mt-0.5">
+                <h3 id="cv-dialog-title" className="text-xl sm:text-2xl font-black text-white mt-0.5">
                   {t.cv.subtitle}
                 </h3>
               </div>

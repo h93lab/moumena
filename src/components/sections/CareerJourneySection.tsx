@@ -22,7 +22,7 @@ export const CareerJourneySection: React.FC = () => {
   return (
     <section
       id="career"
-      className="relative w-full bg-[#090A0D] border-t border-white/5 py-24 sm:py-28 md:py-36 px-5 sm:px-8 md:px-12 z-20 select-none overflow-hidden"
+      className="relative w-full bg-[#0C0C0C] py-24 sm:py-28 md:py-36 px-5 sm:px-8 md:px-12 select-none overflow-hidden"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[#B600A8]/10 blur-[130px] pointer-events-none rounded-full" />

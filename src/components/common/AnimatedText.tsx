@@ -1,67 +1,45 @@
 import React, { useRef } from 'react';
-import { useScroll, useTransform, motion, MotionValue } from 'framer-motion';
+import { useReducedMotion, useScroll, useTransform, motion, MotionValue } from 'framer-motion';
 
 interface AnimatedTextProps {
   text: string;
   className?: string;
 }
 
-interface CharProps {
-  char: string;
+const AnimatedWord: React.FC<{
+  word: string;
   progress: MotionValue<number>;
   range: [number, number];
-}
-
-const AnimatedChar: React.FC<CharProps> = ({ char, progress, range }) => {
-  const opacity = useTransform(progress, range, [0.2, 1]);
-
-  return (
-    <span className="relative inline-block">
-      <span className="opacity-0">{char}</span>
-      <motion.span
-        style={{ opacity }}
-        className="absolute inset-0 select-none pointer-events-none"
-      >
-        {char}
-      </motion.span>
-    </span>
-  );
+  reduceMotion: boolean;
+}> = ({ word, progress, range, reduceMotion }) => {
+  const opacity = useTransform(progress, range, [0.25, 1]);
+  return <motion.span className="inline-block" style={{ opacity: reduceMotion ? 1 : opacity }}>{word}</motion.span>;
 };
 
 export const AnimatedText: React.FC<AnimatedTextProps> = ({ text, className = '' }) => {
   const containerRef = useRef<HTMLParagraphElement>(null);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start 0.8', 'end 0.2'],
   });
 
-  const characters = text.split('');
-  const total = characters.length;
+  const words = text.trim().split(/\s+/);
 
   return (
-    <p ref={containerRef} className={`relative flex flex-wrap justify-center ${className}`}>
-      {characters.map((char, index) => {
-        // Calculate step range for this character
-        const start = index / total;
-        const end = Math.min(1, (index + 1) / total);
-
-        if (char === ' ') {
-          return (
-            <span key={index} className="inline-block whitespace-pre">
-              {' '}
-            </span>
-          );
-        }
-
-        return (
-          <AnimatedChar
+    <p ref={containerRef} className={`relative flex flex-wrap justify-center gap-x-[0.28em] ${className}`}>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true" className="contents">
+        {words.map((word, index) => (
+          <AnimatedWord
             key={index}
-            char={char}
+            word={word}
             progress={scrollYProgress}
-            range={[start, end]}
+            range={[index / words.length, Math.min(1, (index + 1) / words.length)]}
+            reduceMotion={Boolean(reduceMotion)}
           />
-        );
-      })}
+        ))}
+      </span>
     </p>
   );
 };

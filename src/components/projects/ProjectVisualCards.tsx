@@ -40,6 +40,8 @@ export const EditableVisualSlot: React.FC<VisualSlotProps> = ({
       {customSrc ? (
         <img
           src={customSrc}
+          loading="lazy"
+          decoding="async"
           alt={`Project visual for ${slotKey}`}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onClick={onClick}

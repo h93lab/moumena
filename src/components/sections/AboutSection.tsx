@@ -22,7 +22,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onContactClick }) =>
         <FadeIn delay={0.1} x={-80} y={0} duration={0.9}>
           <img
             src={PORTFOLIO_DATA.cornerIcons.moon}
-            alt="3D Moon ornament"
+            alt=""
+            loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
             className="w-[120px] sm:w-[160px] md:w-[210px] h-auto object-contain drop-shadow-2xl opacity-90 hover:scale-105 transition-transform"
           />
@@ -34,7 +36,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onContactClick }) =>
         <FadeIn delay={0.25} x={-80} y={0} duration={0.9}>
           <img
             src={PORTFOLIO_DATA.cornerIcons.object3d}
-            alt="3D geometric object"
+            alt=""
+            loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
             className="w-[100px] sm:w-[140px] md:w-[180px] h-auto object-contain drop-shadow-2xl opacity-90 hover:scale-105 transition-transform"
           />
@@ -46,7 +50,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onContactClick }) =>
         <FadeIn delay={0.15} x={80} y={0} duration={0.9}>
           <img
             src={PORTFOLIO_DATA.cornerIcons.lego}
-            alt="3D Lego ornament"
+            alt=""
+            loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
             className="w-[120px] sm:w-[160px] md:w-[210px] h-auto object-contain drop-shadow-2xl opacity-90 hover:scale-105 transition-transform"
           />
@@ -58,7 +64,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onContactClick }) =>
         <FadeIn delay={0.3} x={80} y={0} duration={0.9}>
           <img
             src={PORTFOLIO_DATA.cornerIcons.group3d}
-            alt="3D group element"
+            alt=""
+            loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
             className="w-[130px] sm:w-[170px] md:w-[220px] h-auto object-contain drop-shadow-2xl opacity-90 hover:scale-105 transition-transform"
           />

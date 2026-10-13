@@ -6,7 +6,6 @@ interface Translations {
   nav: {
     about: string;
     career: string;
-    services: string;
     projects: string;
     contact: string;
     cv: string;
@@ -27,12 +26,21 @@ interface Translations {
     projectsCount: string;
     experienceYears: string;
   };
-  services: {
-    heading: string;
-  };
   projects: {
     heading: string;
     liveProject: string;
+    showAll: string;
+    showLess: string;
+  };
+  projectDetail: {
+    client: string;
+    timeline: string;
+    recognition: string;
+    overview: string;
+    artifacts: string;
+    callout: string;
+    close: string;
+    inquire: string;
   };
   cv: {
     title: string;
@@ -50,6 +58,9 @@ interface Translations {
     emailLabel: string;
     msgLabel: string;
     sendBtn: string;
+    sending: string;
+    sendError: string;
+    emailFallback: string;
     sentTitle: string;
     sentMsg: string;
   };
@@ -64,7 +75,6 @@ const translations: Record<Language, Translations> = {
     nav: {
       about: 'About',
       career: 'Career',
-      services: 'Services',
       projects: 'Projects',
       contact: 'Contact',
       cv: 'CV / Resume',
@@ -85,12 +95,21 @@ const translations: Record<Language, Translations> = {
       projectsCount: '30+ Completed Campaigns',
       experienceYears: '10+ Years Experience',
     },
-    services: {
-      heading: 'Services',
-    },
     projects: {
-      heading: 'Project',
+      heading: 'Projects',
       liveProject: 'Live Project',
+      showAll: 'Explore all projects',
+      showLess: 'Show featured projects',
+    },
+    projectDetail: {
+      client: 'Client',
+      timeline: 'Timeline',
+      recognition: 'Recognition',
+      overview: 'Project Overview & Impact',
+      artifacts: 'Visual Artifacts & Deliverables',
+      callout: 'Need a similar design for your brand?',
+      close: 'Close',
+      inquire: 'Inquire Project',
     },
     cv: {
       title: 'Curriculum Vitae',
@@ -108,6 +127,9 @@ const translations: Record<Language, Translations> = {
       emailLabel: 'Email Address',
       msgLabel: 'Project Brief or Inquiry',
       sendBtn: 'Send Message',
+      sending: 'Sending...',
+      sendError: 'Your message could not be sent. Please try again or email directly.',
+      emailFallback: 'Email directly',
       sentTitle: 'Message Received!',
       sentMsg: 'Thank you for reaching out. Moumena will get back to you shortly.',
     },
@@ -120,7 +142,6 @@ const translations: Record<Language, Translations> = {
     nav: {
       about: 'عني',
       career: 'مسيرتي',
-      services: 'الخدمات',
       projects: 'المشاريع',
       contact: 'تواصل معي',
       cv: 'السيرة الذاتية',
@@ -141,12 +162,21 @@ const translations: Record<Language, Translations> = {
       projectsCount: '30+ حملة ومشروع منجز',
       experienceYears: '10+ سنوات خبرة عملية',
     },
-    services: {
-      heading: 'الخدمات',
-    },
     projects: {
       heading: 'المشاريع',
       liveProject: 'استعراض المشروع',
+      showAll: 'استعرض كل المشاريع',
+      showLess: 'اعرض المشاريع المختارة',
+    },
+    projectDetail: {
+      client: 'العميل',
+      timeline: 'التاريخ',
+      recognition: 'التقدير',
+      overview: 'نبذة عن المشروع وأثره',
+      artifacts: 'نماذج من الأعمال',
+      callout: 'تحتاج تصميمًا مشابهًا لعلامتك؟',
+      close: 'إغلاق',
+      inquire: 'استفسر عن مشروع',
     },
     cv: {
       title: 'السيرة الذاتية المهنية',
@@ -164,6 +194,9 @@ const translations: Record<Language, Translations> = {
       emailLabel: 'البريد الإلكتروني',
       msgLabel: 'تفاصيل المشروع أو الاستفسار',
       sendBtn: 'إرسال الرسالة',
+      sending: 'جارٍ الإرسال...',
+      sendError: 'تعذر إرسال الرسالة. حاول مرة أخرى أو راسلني عبر البريد مباشرةً.',
+      emailFallback: 'راسلني بالبريد',
       sentTitle: 'تم استلام رسالتك بنجاح!',
       sentMsg: 'شكراً لتواصلك. ستقوم مؤمنة بالرد عليك في أقرب وقت ممكن.',
     },

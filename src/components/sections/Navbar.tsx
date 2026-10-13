@@ -25,6 +25,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onContactClick }) => {
     >
       <nav className="w-full flex items-center justify-between">
         <button
+          onClick={() => scrollTo('projects')}
+          className="text-[#D7E2EA] font-medium uppercase tracking-wider text-xs sm:text-base md:text-lg lg:text-[1.3rem] hover:opacity-70 transition-opacity duration-200 cursor-pointer"
+        >
+          {t.nav.projects}
+        </button>
+
+        <button
           onClick={() => scrollTo('about')}
           className="text-[#D7E2EA] font-medium uppercase tracking-wider text-xs sm:text-base md:text-lg lg:text-[1.3rem] hover:opacity-70 transition-opacity duration-200 cursor-pointer"
         >
@@ -32,24 +39,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onContactClick }) => {
         </button>
 
         <button
-          onClick={() => scrollTo('services')}
-          className="text-[#D7E2EA] font-medium uppercase tracking-wider text-xs sm:text-base md:text-lg lg:text-[1.3rem] hover:opacity-70 transition-opacity duration-200 cursor-pointer"
-        >
-          {t.nav.services}
-        </button>
-
-        <button
           onClick={() => scrollTo('career')}
           className="text-[#D7E2EA] font-medium uppercase tracking-wider text-xs sm:text-base md:text-lg lg:text-[1.3rem] hover:opacity-70 transition-opacity duration-200 cursor-pointer"
         >
           {t.nav.career}
-        </button>
-
-        <button
-          onClick={() => scrollTo('projects')}
-          className="text-[#D7E2EA] font-medium uppercase tracking-wider text-xs sm:text-base md:text-lg lg:text-[1.3rem] hover:opacity-70 transition-opacity duration-200 cursor-pointer"
-        >
-          {t.nav.projects}
         </button>
 
         <button

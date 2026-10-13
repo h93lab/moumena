@@ -2,6 +2,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Award, ExternalLink, Calendar, Building, CheckCircle2 } from 'lucide-react';
 import { ProjectItem } from '../../data/portfolioData';
+import { useLanguage } from '../../context/LanguageContext';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import {
   MohapCertificateVisual,
   MohapSocialPostsVisual,
@@ -40,15 +42,19 @@ import {
 
 interface ProjectModalProps {
   project: ProjectItem | null;
+  isOpen: boolean;
   onClose: () => void;
   onOpenContact: () => void;
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
   project,
+  isOpen,
   onClose,
   onOpenContact,
 }) => {
+  const { lang, t } = useLanguage();
+  const dialogRef = useModalAccessibility(isOpen, onClose);
   if (!project) return null;
 
   const renderVisualArtifacts = () => {
@@ -236,6 +242,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
   return (
     <AnimatePresence>
+      {isOpen && (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
         {/* Backdrop */}
         <motion.div
@@ -248,6 +255,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
         {/* Modal Window */}
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="project-dialog-title"
+          tabIndex={-1}
           initial={{ opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 20 }}
@@ -261,10 +273,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               </span>
               <div>
                 <span className="text-[11px] uppercase tracking-wider text-[#BBCCD7] block">
-                  {project.category}
+                  {lang === 'ar' ? project.categoryAr : project.category}
                 </span>
-                <h3 className="text-lg sm:text-2xl font-bold uppercase tracking-tight text-white">
-                  {project.title}
+                <h3 id="project-dialog-title" className="text-lg sm:text-2xl font-bold uppercase tracking-tight text-white">
+                  {lang === 'ar' ? project.titleAr : project.title}
                 </h3>
               </div>
             </div>
@@ -279,32 +291,32 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           </div>
 
           {/* Body Content */}
-          <div className="p-6 sm:p-8 overflow-y-auto space-y-8">
+          <div className="min-w-0 p-6 sm:p-8 overflow-y-auto overflow-x-hidden space-y-8">
             {/* Meta Strip */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <Building className="w-5 h-5 text-purple-400 shrink-0" />
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-slate-400">Client</div>
-                  <div className="text-xs sm:text-sm font-medium text-white">{project.client}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-400">{t.projectDetail.client}</div>
+                  <div className="text-xs sm:text-sm font-medium text-white">{lang === 'ar' ? project.clientAr : project.client}</div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <Calendar className="w-5 h-5 text-purple-400 shrink-0" />
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-slate-400">Timeline</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-400">{t.projectDetail.timeline}</div>
                   <div className="text-xs sm:text-sm font-medium text-white">{project.year}</div>
                 </div>
               </div>
 
               {project.recognition && (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <Award className="w-5 h-5 text-amber-400 shrink-0" />
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-amber-400">Recognition</div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] uppercase tracking-wider text-amber-400">{t.projectDetail.recognition}</div>
                     <div className="text-xs sm:text-sm font-medium text-amber-200 truncate">
-                      {project.recognition}
+                      {lang === 'ar' ? project.recognitionAr || project.recognition : project.recognition}
                     </div>
                   </div>
                 </div>
@@ -314,10 +326,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {/* Overview */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                Project Overview &amp; Impact
+                {t.projectDetail.overview}
               </h4>
               <p className="text-sm sm:text-base leading-relaxed text-[#D7E2EA] font-light">
-                {project.summary}
+                {lang === 'ar' ? project.summaryAr : project.summary}
               </p>
             </div>
 
@@ -336,7 +348,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {/* Media Gallery matching PDF */}
             <div className="space-y-4">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Visual Artifacts &amp; Deliverables
+                {t.projectDetail.artifacts}
               </h4>
               {renderVisualArtifacts()}
             </div>
@@ -345,14 +357,14 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           {/* Footer Action */}
           <div className="px-6 sm:px-8 py-4 border-t border-white/10 bg-[#14151B] flex items-center justify-between shrink-0">
             <span className="text-xs text-slate-400 hidden sm:inline">
-              Need a similar high-impact design for your brand?
+              {t.projectDetail.callout}
             </span>
             <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 onClick={onClose}
                 className="px-5 py-2.5 rounded-full border border-white/20 text-xs uppercase tracking-wider hover:bg-white/5 transition-colors cursor-pointer"
               >
-                Close
+                {t.projectDetail.close}
               </button>
               <button
                 onClick={() => {
@@ -364,12 +376,13 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   background: 'linear-gradient(123deg, #18011F 7%, #B600A8 37%, #7621B0 72%, #BE4C00 100%)',
                 }}
               >
-                Inquire Project
+                {t.projectDetail.inquire}
               </button>
             </div>
           </div>
         </motion.div>
       </div>
+      )}
     </AnimatePresence>
   );
 };

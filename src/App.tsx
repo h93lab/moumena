@@ -3,29 +3,65 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { LanguageProvider } from './context/LanguageContext';
 import { CustomCursor } from './components/common/CustomCursor';
 import { FloatingActionPill } from './components/common/FloatingActionPill';
 import { HeroSection } from './components/sections/HeroSection';
-import { MarqueeSection } from './components/sections/MarqueeSection';
 import { ClientTrustBar } from './components/sections/ClientTrustBar';
 import { AboutSection } from './components/sections/AboutSection';
-import { ServicesSection } from './components/sections/ServicesSection';
 import { CareerJourneySection } from './components/sections/CareerJourneySection';
-import { ProjectsSection } from './components/sections/ProjectsSection';
 import { Footer } from './components/sections/Footer';
-import { ContactModal } from './components/common/ContactModal';
-import { ProjectModal } from './components/common/ProjectModal';
-import { CvModal } from './components/common/CvModal';
-import { ShowreelModal } from './components/common/ShowreelModal';
 import { ProjectItem } from './data/portfolioData';
+
+const ContactModal = lazy(() => import('./components/common/ContactModal').then((module) => ({ default: module.ContactModal })));
+const ProjectsSection = lazy(() => import('./components/sections/ProjectsSection').then((module) => ({ default: module.ProjectsSection })));
+const ProjectModal = lazy(() => import('./components/common/ProjectModal').then((module) => ({ default: module.ProjectModal })));
+const CvModal = lazy(() => import('./components/common/CvModal').then((module) => ({ default: module.CvModal })));
+const ShowreelModal = lazy(() => import('./components/common/ShowreelModal').then((module) => ({ default: module.ShowreelModal })));
 
 function PortfolioContent() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isCvOpen, setIsCvOpen] = useState(false);
   const [isShowreelOpen, setIsShowreelOpen] = useState(false);
+  const [mountedModals, setMountedModals] = useState({ contact: false, cv: false, showreel: false });
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+  const [isProjectOpen, setIsProjectOpen] = useState(false);
+  const [loadProjects, setLoadProjects] = useState(false);
+  const projectsAnchorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const anchor = projectsAnchorRef.current;
+    if (!anchor || !('IntersectionObserver' in window)) {
+      setLoadProjects(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoadProjects(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '800px 0px' });
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, []);
+
+  const openContact = () => {
+    setMountedModals((current) => ({ ...current, contact: true }));
+    setIsContactOpen(true);
+  };
+  const openCv = () => {
+    setMountedModals((current) => ({ ...current, cv: true }));
+    setIsCvOpen(true);
+  };
+  const openShowreel = () => {
+    setMountedModals((current) => ({ ...current, showreel: true }));
+    setIsShowreelOpen(true);
+  };
+  const openProject = (project: ProjectItem) => {
+    setSelectedProject(project);
+    setIsProjectOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#0C0C0C] text-[#D7E2EA] font-['Kanit',sans-serif] selection:bg-[#B600A8]/30 selection:text-white overflow-x-clip relative">
@@ -33,56 +69,49 @@ function PortfolioContent() {
       <CustomCursor />
 
       {/* Floating Action Pill: (CV | EN) */}
-      <FloatingActionPill onCvClick={() => setIsCvOpen(true)} />
+      <FloatingActionPill onCvClick={openCv} />
 
       {/* 1. Hero Section */}
       <HeroSection
-        onContactClick={() => setIsContactOpen(true)}
-        onShowreelClick={() => setIsShowreelOpen(true)}
+        onContactClick={openContact}
+        onShowreelClick={openShowreel}
       />
 
-      {/* 2. Marquee Section */}
-      <MarqueeSection />
+      {/* 2. Projects Section (كل الأعمال في البورتفوليو) */}
+      <div id="projects" ref={projectsAnchorRef}>
+        {loadProjects ? (
+          <Suspense fallback={<div className="min-h-[40vh] bg-[#0C0C0C]" />}>
+            <ProjectsSection onOpenProject={openProject} />
+          </Suspense>
+        ) : <div className="min-h-[40vh] bg-[#0C0C0C]" />}
+      </div>
 
       {/* 3. Luxury Client & Government Trust Section */}
       <ClientTrustBar />
 
       {/* 4. About Section */}
-      <AboutSection onContactClick={() => setIsContactOpen(true)} />
+      <AboutSection onContactClick={openContact} />
 
-      {/* 5. Services Section */}
-      <ServicesSection />
-
-      {/* 6. Career Journey Section (مسيرتي الوظيفية بالتاريخ ومكان العمل) */}
+      {/* 5. Career Journey Section (مسيرتي الوظيفية بالتاريخ ومكان العمل) */}
       <CareerJourneySection />
 
-      {/* 7. Projects Section (كل الأعمال في البورتفوليو) */}
-      <ProjectsSection onOpenProject={(proj) => setSelectedProject(proj)} />
-
-      {/* Footer */}
-      <Footer onContactClick={() => setIsContactOpen(true)} />
+      {/* 6. Footer */}
+      <Footer onContactClick={openContact} />
 
       {/* Modals */}
-      <ContactModal
-        isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
-      />
-
-      <CvModal
-        isOpen={isCvOpen}
-        onClose={() => setIsCvOpen(false)}
-      />
-
-      <ShowreelModal
-        isOpen={isShowreelOpen}
-        onClose={() => setIsShowreelOpen(false)}
-      />
-
-      <ProjectModal
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-        onOpenContact={() => setIsContactOpen(true)}
-      />
+      <Suspense fallback={null}>
+        {mountedModals.contact && <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
+        {mountedModals.cv && <CvModal isOpen={isCvOpen} onClose={() => setIsCvOpen(false)} />}
+        {mountedModals.showreel && <ShowreelModal isOpen={isShowreelOpen} onClose={() => setIsShowreelOpen(false)} />}
+        {selectedProject && (
+          <ProjectModal
+            project={selectedProject}
+            isOpen={isProjectOpen}
+            onClose={() => setIsProjectOpen(false)}
+            onOpenContact={openContact}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { FadeIn } from '../common/FadeIn';
 import { LiveProjectButton } from '../common/Buttons';
 import { PORTFOLIO_DATA, ProjectItem } from '../../data/portfolioData';
@@ -55,6 +55,7 @@ const StackingCard: React.FC<StackingCardProps> = ({
   onOpenProject,
 }) => {
   const { lang, t } = useLanguage();
+  const reduceMotion = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: cardRef,
@@ -153,7 +154,7 @@ const StackingCard: React.FC<StackingCardProps> = ({
       }}
     >
       <motion.div
-        style={{ scale }}
+        style={{ scale: reduceMotion ? 1 : scale }}
         className="w-full bg-[#0C0C0C] border-2 border-[#D7E2EA] rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8 shadow-2xl transition-shadow duration-300 hover:border-white"
       >
         {/* Top Row: Number, Category & Name, and Live Project Ghost Button */}
@@ -237,12 +238,14 @@ interface ProjectsSectionProps {
 
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenProject }) => {
   const { t } = useLanguage();
-  const totalCards = PORTFOLIO_DATA.projects.length;
+  const [showAll, setShowAll] = useState(false);
+  const featuredCount = 4;
+  const projects = showAll ? PORTFOLIO_DATA.projects : PORTFOLIO_DATA.projects.slice(0, featuredCount);
+  const totalCards = projects.length;
 
   return (
     <section
-      id="projects"
-      className="relative w-full bg-[#0C0C0C] rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] -mt-10 sm:-mt-12 md:-mt-14 pt-16 sm:pt-20 md:pt-24 pb-28 px-4 sm:px-8 md:px-12 z-20"
+      className="relative w-full bg-[#0C0C0C] pt-20 sm:pt-24 md:pt-28 pb-20 sm:pb-24 md:pb-28 px-4 sm:px-8 md:px-12"
     >
       <div className="max-w-6xl mx-auto w-full">
         {/* Heading: "Project" */}
@@ -257,9 +260,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenProject 
           </FadeIn>
         </div>
 
-        {/* Stacking Cards for ALL 6 projects */}
+        {/* Featured projects keep the first visit focused and quick to scroll. */}
         <div className="relative w-full">
-          {PORTFOLIO_DATA.projects.map((project, index) => (
+          {projects.map((project, index) => (
             <StackingCard
               key={project.id}
               project={project}
@@ -269,6 +272,18 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenProject 
             />
           ))}
         </div>
+        {PORTFOLIO_DATA.projects.length > featuredCount && (
+          <div className="flex justify-center mt-4">
+            <button
+              type="button"
+              aria-expanded={showAll}
+              onClick={() => setShowAll((current) => !current)}
+              className="px-7 py-3 rounded-full border border-[#D7E2EA]/40 text-[#D7E2EA] font-semibold hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B600A8] transition-colors cursor-pointer"
+            >
+              {showAll ? t.projects.showLess : `${t.projects.showAll} (${PORTFOLIO_DATA.projects.length})`}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
