@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Printer, Download, Briefcase, GraduationCap, Wrench, Sparkles, MapPin, Mail, Phone } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import { PORTFOLIO_DATA } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 
 interface CvModalProps {
@@ -12,71 +12,20 @@ interface CvModalProps {
 
 export const CvModal: React.FC<CvModalProps> = ({ isOpen, onClose }) => {
   const { lang, t } = useLanguage();
+  const { content: PORTFOLIO_DATA } = useSiteContent();
   const dialogRef = useModalAccessibility(isOpen, onClose);
 
   const handlePrint = () => {
     window.print();
   };
 
-  const experiences = [
-    {
-      role: 'Senior Creative & Graphic Designer',
-      company: 'Housecall',
-      period: 'Oct 2025 - Present',
-      bullets: [
-        'Lead creative development across social media, digital marketing, brand communication, and internal materials.',
-        'Develop creative concepts and visual content for healthcare campaigns, promotions, awareness initiatives, and brand activities.',
-        'Design static and motion content including social media assets, campaigns, presentations, marketing materials, and digital experiences.',
-        'Contribute to content planning, creative direction, copy development, and visual storytelling.',
-      ],
-    },
-    {
-      role: 'Art Director',
-      company: 'NFINITY8',
-      period: 'Aug 2024 - Sep 2025',
-      bullets: [
-        'Led the social media design projects for Emirates Health Services (EHS).',
-        'Designed customized themes and key visuals for major government events and special national occasions.',
-      ],
-    },
-    {
-      role: 'Senior Graphic Designer',
-      company: 'INFOCUS MEDIA',
-      period: 'May 2019 - Feb 2024',
-      bullets: [
-        'Led design and production for top clients like the UAE Ministry of Health & Prevention (MOHAP) and Emirates Health Services.',
-        'Created visually appealing social media posts and concise, impactful motion videos for online platforms.',
-        'Recognized with official appreciation certificate for high agility during COVID-19 nationwide campaigns.',
-      ],
-    },
-    {
-      role: 'Motion Graphic Designer',
-      company: 'ZOOM STUDIO',
-      period: 'Apr 2018 - Apr 2019',
-      bullets: [
-        'Crafted captivating static and motion graphics to enhance brand visibility and engagement across various projects.',
-        'Led social media campaigns and orchestrated media coverage to amplify brand presence and outreach.',
-      ],
-    },
-    {
-      role: 'Lead Graphic Designer',
-      company: 'EMIRATES VISION MEDIA NETWORK',
-      period: 'Apr 2017 - Apr 2018',
-      bullets: [
-        'Led the design department and maintained high-level communication with national media agencies.',
-        'Produced animated infographics, invitations, advertisements, and event materials.',
-      ],
-    },
-    {
-      role: 'Graphic Designer & Video Editor',
-      company: 'AJMAN UNIVERSITY',
-      period: 'Apr 2015 - Mar 2017',
-      bullets: [
-        'Mentored students in videography techniques and industry-standard design/editing software.',
-        'Produced dynamic motion videos for college advertisements and official university events.',
-      ],
-    },
-  ];
+  const experiences = PORTFOLIO_DATA.careerJourney.filter((item) => !item.education).map((item) => ({
+    role: lang === 'ar' ? item.roleAr : item.role,
+    company: lang === 'ar' ? item.companyAr : item.company,
+    period: lang === 'ar' ? item.periodAr : item.period,
+    bullets: lang === 'ar' ? item.achievementsAr : item.achievements,
+  }));
+  const education = PORTFOLIO_DATA.careerJourney.find((item) => item.education);
 
   return (
     <AnimatePresence>
@@ -192,13 +141,13 @@ export const CvModal: React.FC<CvModalProps> = ({ isOpen, onClose }) => {
                     </h4>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                    <span className="text-xs font-mono text-purple-300 block mb-1">2013 - 2017</span>
-                    <h5 className="text-base font-bold text-white">Bachelor&apos;s Degree</h5>
+                    <span className="text-xs font-mono text-purple-300 block mb-1">{education ? (lang === 'ar' ? education.periodAr : education.period) : ''}</span>
+                    <h5 className="text-base font-bold text-white">{education ? (lang === 'ar' ? education.roleAr : education.role) : ''}</h5>
                     <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                      Graphic Design and Radio &amp; TV Information and Mass Communications and Humanities
+                      {education ? (lang === 'ar' ? education.descriptionAr : education.description) : ''}
                     </p>
                     <div className="mt-2 text-xs font-semibold text-emerald-400">
-                      Ajman University · GPA: B+
+                      {education ? (lang === 'ar' ? education.companyAr : education.company) : ''}
                     </div>
                   </div>
                 </div>

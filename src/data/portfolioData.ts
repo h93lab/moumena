@@ -16,9 +16,12 @@ export interface ProjectItem {
   recognition?: string;
   recognitionAr?: string;
   year: string;
+  customVisuals?: boolean;
+  videoUrls?: string[];
 }
 
 export interface CareerMilestone {
+  education?: boolean;
   period: string;
   periodAr: string;
   role: string;
@@ -48,6 +51,7 @@ export const PORTFOLIO_DATA = {
     email: "moumena94@gmail.com",
     phone: "+971503071603",
     whatsapp: "https://wa.me/971503071603",
+    avatarUrl: "",
     experienceYears: "10+",
     clientsCount: "16+",
     projectsCount: "30+",
@@ -194,6 +198,7 @@ export const PORTFOLIO_DATA = {
     },
     {
       period: "2013 - 2017",
+      education: true,
       periodAr: "2013 - 2017",
       role: "Bachelor's Degree",
       roleAr: "بكالوريوس التصميم الجرافيكي والإعلام",

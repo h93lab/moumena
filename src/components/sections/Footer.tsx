@@ -1,12 +1,13 @@
 import React from 'react';
 import { ArrowUp, Mail, Phone, MapPin } from 'lucide-react';
-import { PORTFOLIO_DATA } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 
 interface FooterProps {
   onContactClick: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onContactClick }) => {
+  const { content: PORTFOLIO_DATA } = useSiteContent();
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

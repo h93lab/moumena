@@ -13,11 +13,13 @@ import { AboutSection } from './components/sections/AboutSection';
 import { CareerJourneySection } from './components/sections/CareerJourneySection';
 import { Footer } from './components/sections/Footer';
 import { ProjectItem } from './data/portfolioData';
+import { SiteContentProvider } from './context/SiteContentContext';
 
 const ContactModal = lazy(() => import('./components/common/ContactModal').then((module) => ({ default: module.ContactModal })));
 const ProjectsSection = lazy(() => import('./components/sections/ProjectsSection').then((module) => ({ default: module.ProjectsSection })));
 const ProjectModal = lazy(() => import('./components/common/ProjectModal').then((module) => ({ default: module.ProjectModal })));
 const CvModal = lazy(() => import('./components/common/CvModal').then((module) => ({ default: module.CvModal })));
+const AdminPage = lazy(() => import('./components/admin/AdminPage'));
 
 function PortfolioContent() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -110,8 +112,12 @@ function PortfolioContent() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <PortfolioContent />
-    </LanguageProvider>
+    <SiteContentProvider>
+      <LanguageProvider>
+        {window.location.pathname.replace(/\/$/, '') === '/admin' ? (
+          <Suspense fallback={<div className="min-h-screen bg-[#0C0C0C]" />}><AdminPage /></Suspense>
+        ) : <PortfolioContent />}
+      </LanguageProvider>
+    </SiteContentProvider>
   );
 }

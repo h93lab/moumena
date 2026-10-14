@@ -4,6 +4,7 @@ import { X, Award, ExternalLink, Calendar, Building, CheckCircle2 } from 'lucide
 import { ProjectItem } from '../../data/portfolioData';
 import { useLanguage } from '../../context/LanguageContext';
 import { useModalAccessibility } from '../../hooks/useModalAccessibility';
+import { safeVideoLink, videoEmbedUrl } from '../../lib/video';
 import {
   MohapCertificateVisual,
   MohapSocialPostsVisual,
@@ -350,8 +351,41 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 {t.projectDetail.artifacts}
               </h4>
-              {renderVisualArtifacts()}
+              {project.customVisuals ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[project.col2Image, project.col1TopImage, project.col1BottomImage].filter(Boolean).map((src, index) => (
+                    <img key={`${src}-${index}`} src={src} alt={`${project.title} visual ${index + 1}`} loading="lazy" className="w-full rounded-2xl object-cover border border-white/10" />
+                  ))}
+                </div>
+              ) : renderVisualArtifacts()}
             </div>
+
+            {(project.videoUrls?.length ?? 0) > 0 && (
+              <div className="space-y-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {lang === 'ar' ? 'فيديوهات المشروع' : 'Project videos'}
+                </h4>
+                {project.videoUrls?.map((url, index) => {
+                  const embedUrl = videoEmbedUrl(url);
+                  return embedUrl ? (
+                    <iframe
+                      key={`${url}-${index}`}
+                      src={embedUrl}
+                      title={`${project.title} video ${index + 1}`}
+                      loading="lazy"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      className="w-full aspect-video rounded-2xl border border-white/10"
+                    />
+                  ) : safeVideoLink(url) ? (
+                    <a key={`${url}-${index}`} href={safeVideoLink(url)!} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-purple-300 underline">
+                      {lang === 'ar' ? 'افتح الفيديو' : 'Open video'} <ExternalLink className="w-4 h-4" />
+                    </a>
+                  ) : null;
+                })}
+              </div>
+            )}
           </div>
 
           {/* Footer Action */}

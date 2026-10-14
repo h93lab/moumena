@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useSiteContent } from './SiteContentContext';
 
 export type Language = 'en' | 'ar';
 
-interface Translations {
+export interface Translations {
   nav: {
     about: string;
     career: string;
@@ -16,7 +17,9 @@ interface Translations {
     contactBtn: string;
   };
   trust: {
+    badge: string;
     heading: string;
+    description: string;
   };
   about: {
     heading: string;
@@ -24,6 +27,11 @@ interface Translations {
     clientsCount: string;
     projectsCount: string;
     experienceYears: string;
+  };
+  career: {
+    badge: string;
+    heading: string;
+    description: string;
   };
   projects: {
     heading: string;
@@ -69,7 +77,7 @@ interface Translations {
   };
 }
 
-const translations: Record<Language, Translations> = {
+export const DEFAULT_TRANSLATIONS: Record<Language, Translations> = {
   en: {
     nav: {
       about: 'About',
@@ -84,7 +92,9 @@ const translations: Record<Language, Translations> = {
       contactBtn: 'Contact Me',
     },
     trust: {
-      heading: 'Trusted by Leading UAE Government Entities & Global Brands',
+      badge: 'OFFICIAL GOVERNMENT ENDORSEMENT',
+      heading: 'Trusted Creative Director for UAE Government Entities & Leading Institutions',
+      description: 'Crafting national awareness campaigns, motion graphics, and VIP spatial branding with distinction',
     },
     about: {
       heading: 'About me',
@@ -92,6 +102,11 @@ const translations: Record<Language, Translations> = {
       clientsCount: '16+ Major Entities',
       projectsCount: '30+ Completed Campaigns',
       experienceYears: '10+ Years Experience',
+    },
+    career: {
+      badge: '10+ YEARS PROFESSIONAL TIMELINE',
+      heading: 'Career Journey',
+      description: 'A decade of creative leadership, art direction, and high-impact visual campaigns documented by date and workplace',
     },
     projects: {
       heading: 'Projects',
@@ -150,7 +165,9 @@ const translations: Record<Language, Translations> = {
       contactBtn: 'تواصل معي',
     },
     trust: {
-      heading: 'شريك إبداعي معتمد لأبرز الجهات الحكومية والمؤسسات في الإمارات',
+      badge: 'اعتماد وشراكات حكومية',
+      heading: 'شريك إبداعي موثوق لأبرز الهيئات الحكومية في دولة الإمارات',
+      description: 'تصميم وإخراج الحملات الوطنية الاستراتيجية، الموشن جرافيك، والفعاليات الرسمية الكبرى',
     },
     about: {
       heading: 'عني',
@@ -158,6 +175,11 @@ const translations: Record<Language, Translations> = {
       clientsCount: '16+ جهة حكومية وكبرى',
       projectsCount: '30+ حملة ومشروع منجز',
       experienceYears: '10+ سنوات خبرة عملية',
+    },
+    career: {
+      badge: 'المسار المهني والخبرة العملية',
+      heading: 'مسيرتي الوظيفية',
+      description: 'سجل حافل بالخبرات القيادية موثق بالتاريخ ومكان العمل لأبرز الجهات الحكومية والشركات الكبرى بدولة الإمارات',
     },
     projects: {
       heading: 'المشاريع',
@@ -214,6 +236,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { content } = useSiteContent();
   const [lang, setLangState] = useState<Language>(() => {
     return (localStorage.getItem('moumena_lang') as Language) || 'en';
   });
@@ -233,8 +256,17 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.lang = lang;
   }, [lang]);
 
+  const baseCopy = DEFAULT_TRANSLATIONS[lang];
+  const savedCopy = content.copy?.[lang];
+  const t = Object.fromEntries(
+    Object.entries(baseCopy).map(([section, values]) => [
+      section,
+      { ...values, ...(savedCopy?.[section as keyof Translations] ?? {}) },
+    ]),
+  ) as unknown as Translations;
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t: translations[lang] }}>
+    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t }}>
       {children}
     </LanguageContext.Provider>
   );

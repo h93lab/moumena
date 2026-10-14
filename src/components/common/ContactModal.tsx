@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Phone, MapPin, Copy, Check, Send } from 'lucide-react';
-import { PORTFOLIO_DATA } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 
@@ -12,6 +12,7 @@ interface ContactModalProps {
 
 export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   const { lang, t } = useLanguage();
+  const { content: PORTFOLIO_DATA } = useSiteContent();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [formSent, setFormSent] = useState(false);
   const [isSending, setIsSending] = useState(false);

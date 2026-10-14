@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Calendar, CheckCircle2, GraduationCap, Sparkles, Building, ChevronRight } from 'lucide-react';
 import { FadeIn } from '../common/FadeIn';
-import { PORTFOLIO_DATA, CareerMilestone } from '../../data/portfolioData';
+import { CareerMilestone } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export const CareerJourneySection: React.FC = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
+  const { content: PORTFOLIO_DATA } = useSiteContent();
   const [selectedMilestone, setSelectedMilestone] = useState<number>(0);
   const detailCardRef = React.useRef<HTMLDivElement>(null);
 
   const milestones: CareerMilestone[] = PORTFOLIO_DATA.careerJourney;
+  const activeMilestone = Math.min(selectedMilestone, milestones.length - 1);
 
   const handleSelectMilestone = (idx: number) => {
     setSelectedMilestone(idx);
@@ -18,6 +21,8 @@ export const CareerJourneySection: React.FC = () => {
       detailCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  if (!milestones.length) return null;
 
   return (
     <section
@@ -35,7 +40,7 @@ export const CareerJourneySection: React.FC = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs uppercase tracking-widest text-slate-300 mb-3">
               <Briefcase className="w-3.5 h-3.5 text-[#B600A8]" />
               <span>
-                {lang === 'ar' ? 'المسار المهني والخبرة العملية' : '10+ YEARS PROFESSIONAL TIMELINE'}
+                {t.career.badge}
               </span>
             </div>
 
@@ -43,13 +48,11 @@ export const CareerJourneySection: React.FC = () => {
               className="hero-heading font-black uppercase tracking-tight leading-none text-center select-none"
               style={{ fontSize: 'clamp(2.5rem, 8vw, 110px)' }}
             >
-              {lang === 'ar' ? 'مسيرتي الوظيفية' : 'Career Journey'}
+              {t.career.heading}
             </h2>
 
             <p className="text-xs sm:text-base text-slate-400 mt-4 max-w-2xl mx-auto font-light leading-relaxed">
-              {lang === 'ar'
-                ? 'سجل حافل بالخبرات القيادية موثق بالتاريخ ومكان العمل لأبرز الجهات الحكومية والشركات الكبرى بدولة الإمارات'
-                : 'A decade of creative leadership, art direction, and high-impact visual campaigns documented by date and workplace'}
+              {t.career.description}
             </p>
           </FadeIn>
         </div>
@@ -60,8 +63,8 @@ export const CareerJourneySection: React.FC = () => {
           <div className="lg:col-span-5 flex flex-col h-full lg:h-[680px]">
             <div className="flex flex-col gap-3 h-full lg:overflow-y-auto lg:pr-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#B600A8]/40 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#B600A8]/70">
               {milestones.map((milestone, idx) => {
-                const isSelected = selectedMilestone === idx;
-                const isEducation = idx === milestones.length - 1;
+                const isSelected = activeMilestone === idx;
+                const isEducation = !!milestone.education;
 
                 return (
                   <FadeIn key={idx} delay={idx * 0.05} y={15}>
@@ -131,8 +134,8 @@ export const CareerJourneySection: React.FC = () => {
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-mono font-semibold uppercase tracking-wider">
                       {lang === 'ar'
-                        ? milestones[selectedMilestone].typeAr
-                        : milestones[selectedMilestone].type}
+                        ? milestones[activeMilestone].typeAr
+                        : milestones[activeMilestone].type}
                     </span>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-mono">
                       <Calendar className="w-3.5 h-3.5 text-[#B600A8]" />
@@ -140,8 +143,8 @@ export const CareerJourneySection: React.FC = () => {
                         {lang === 'ar' ? 'التاريخ:' : 'Period:'}
                       </strong>
                       {lang === 'ar'
-                        ? milestones[selectedMilestone].periodAr
-                        : milestones[selectedMilestone].period}
+                        ? milestones[activeMilestone].periodAr
+                        : milestones[activeMilestone].period}
                     </span>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs">
                       <MapPin className="w-3.5 h-3.5 text-teal-400" />
@@ -149,20 +152,20 @@ export const CareerJourneySection: React.FC = () => {
                         {lang === 'ar' ? 'مكان العمل:' : 'Location:'}
                       </strong>
                       {lang === 'ar'
-                        ? `${milestones[selectedMilestone].companyAr} (${milestones[selectedMilestone].locationAr})`
-                        : `${milestones[selectedMilestone].company} (${milestones[selectedMilestone].location})`}
+                        ? `${milestones[activeMilestone].companyAr} (${milestones[activeMilestone].locationAr})`
+                        : `${milestones[activeMilestone].company} (${milestones[activeMilestone].location})`}
                     </span>
                   </div>
 
                   <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
                     {lang === 'ar'
-                      ? milestones[selectedMilestone].roleAr
-                      : milestones[selectedMilestone].role}
+                      ? milestones[activeMilestone].roleAr
+                      : milestones[activeMilestone].role}
                   </h3>
                   <div className="text-lg font-bold text-purple-300 mt-1">
                     {lang === 'ar'
-                      ? milestones[selectedMilestone].companyAr
-                      : milestones[selectedMilestone].company}
+                      ? milestones[activeMilestone].companyAr
+                      : milestones[activeMilestone].company}
                   </div>
                 </div>
 
@@ -175,8 +178,8 @@ export const CareerJourneySection: React.FC = () => {
                     </h4>
                     <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-light">
                       {lang === 'ar'
-                        ? milestones[selectedMilestone].descriptionAr
-                        : milestones[selectedMilestone].description}
+                        ? milestones[activeMilestone].descriptionAr
+                        : milestones[activeMilestone].description}
                     </p>
                   </div>
 
@@ -188,8 +191,8 @@ export const CareerJourneySection: React.FC = () => {
 
                     <ul className="space-y-2.5">
                       {(lang === 'ar'
-                        ? milestones[selectedMilestone].achievementsAr
-                        : milestones[selectedMilestone].achievements
+                        ? milestones[activeMilestone].achievementsAr
+                        : milestones[activeMilestone].achievements
                       ).map((ach, aIdx) => (
                         <li key={aIdx} className="flex items-start gap-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />

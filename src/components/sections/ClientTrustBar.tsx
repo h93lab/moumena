@@ -2,9 +2,11 @@ import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Shield, Award, Building2, Sparkles, Scale, HeartPulse, Landmark, CheckCircle2 } from 'lucide-react';
 import { FadeIn } from '../common/FadeIn';
+import { useSiteContent } from '../../context/SiteContentContext';
 
 export const ClientTrustBar: React.FC = () => {
   const { lang, t } = useLanguage();
+  const { content } = useSiteContent();
 
   const entities = [
     {
@@ -89,6 +91,11 @@ export const ClientTrustBar: React.FC = () => {
     },
   ];
 
+  const visibleEntities = content.trustClients.map((client, index) => ({
+    ...entities[index % entities.length],
+    ...client,
+  }));
+
   return (
     <section className="relative w-full bg-[#0C0C0C] py-20 sm:py-24 md:py-28 px-5 sm:px-8 md:px-12 overflow-hidden select-none">
       {/* Background ambient lighting */}
@@ -99,27 +106,21 @@ export const ClientTrustBar: React.FC = () => {
         <FadeIn delay={0} y={20} className="text-center mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs uppercase tracking-widest text-slate-300 mb-3">
             <Sparkles className="w-3.5 h-3.5 text-[#B600A8]" />
-            <span>
-              {lang === 'ar' ? 'اعتماد وشراكات حكومية' : 'OFFICIAL GOVERNMENT ENDORSEMENT'}
-            </span>
+            <span>{t.trust.badge}</span>
           </div>
 
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tight text-white max-w-3xl leading-tight">
-            {lang === 'ar'
-              ? 'شريك إبداعي موثوق لأبرز الهيئات الحكومية في دولة الإمارات'
-              : 'Trusted Creative Director for UAE Government Entities & Leading Institutions'}
+            {t.trust.heading}
           </h3>
 
           <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl mx-auto font-light">
-            {lang === 'ar'
-              ? 'تصميم وإخراج الحملات الوطنية الاستراتيجية، الموشن جرافيك، والفعاليات الرسمية الكبرى'
-              : 'Crafting national awareness campaigns, motion graphics, and VIP spatial branding with distinction'}
+            {t.trust.description}
           </p>
         </FadeIn>
 
         {/* Prestige Entities Grid */}
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          {entities.map((item, idx) => (
+          {visibleEntities.map((item, idx) => (
             <FadeIn
               key={idx}
               delay={idx * 0.06}

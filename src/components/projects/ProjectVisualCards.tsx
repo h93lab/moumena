@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { Camera, Award, Twitter, ShieldCheck, Heart, Repeat2, Bookmark, CheckCircle2 } from 'lucide-react';
+import React from 'react';
+import { Award, Twitter, ShieldCheck, Heart, Repeat2, Bookmark, CheckCircle2 } from 'lucide-react';
 
 interface VisualSlotProps {
   slotKey: string;
   defaultComponent: React.ReactNode;
+  imageUrl?: string;
   aspectClass?: string;
   className?: string;
   onClick?: () => void;
@@ -12,34 +13,15 @@ interface VisualSlotProps {
 export const EditableVisualSlot: React.FC<VisualSlotProps> = ({
   slotKey,
   defaultComponent,
+  imageUrl,
   className = '',
   onClick,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [customSrc, setCustomSrc] = useState<string | null>(() => {
-    return localStorage.getItem(`project_slot_${slotKey}`) || null;
-  });
-
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const res = event.target.result as string;
-          setCustomSrc(res);
-          localStorage.setItem(`project_slot_${slotKey}`, res);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className={`relative group w-full h-full overflow-hidden ${className}`}>
-      {customSrc ? (
+      {imageUrl ? (
         <img
-          src={customSrc}
+          src={imageUrl}
           loading="lazy"
           decoding="async"
           alt={`Project visual for ${slotKey}`}
@@ -52,26 +34,6 @@ export const EditableVisualSlot: React.FC<VisualSlotProps> = ({
         </div>
       )}
 
-      {/* Floating replace button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          fileInputRef.current?.click();
-        }}
-        title="Upload your project image"
-        aria-label="Upload your project image"
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-[#D7E2EA] hover:text-white hover:border-[#B600A8] z-20 cursor-pointer shadow-lg"
-      >
-        <Camera className="w-3.5 h-3.5" />
-      </button>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleUpload}
-        className="hidden"
-      />
     </div>
   );
 };

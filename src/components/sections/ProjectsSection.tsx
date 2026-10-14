@@ -2,7 +2,8 @@ import React, { useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { FadeIn } from '../common/FadeIn';
 import { LiveProjectButton } from '../common/Buttons';
-import { PORTFOLIO_DATA, ProjectItem } from '../../data/portfolioData';
+import { ProjectItem } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 import { useLanguage } from '../../context/LanguageContext';
 import {
   EditableVisualSlot,
@@ -136,9 +137,9 @@ const StackingCard: React.FC<StackingCardProps> = ({
         };
       default:
         return {
-          topVisual: <MohapCertificateVisual />,
-          bottomVisual: <MohapSocialPostsVisual />,
-          tallVisual: <MohapSheikhTweetVisual />,
+          topVisual: <div className="w-full h-full flex items-center justify-center bg-[#191923] text-slate-400 text-center p-6">{project.title}</div>,
+          bottomVisual: <div className="w-full h-full flex items-center justify-center bg-[#191923] text-slate-400 text-center p-6">{project.category}</div>,
+          tallVisual: <div className="w-full h-full flex items-center justify-center bg-[#191923] text-slate-400 text-center p-6">{project.title}</div>,
         };
     }
   };
@@ -164,7 +165,7 @@ const StackingCard: React.FC<StackingCardProps> = ({
               className="font-black text-[#D7E2EA] leading-none select-none tracking-tight font-mono"
               style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}
             >
-              {project.number}
+              {String(index + 1).padStart(2, '0')}
             </span>
 
             <div>
@@ -197,6 +198,7 @@ const StackingCard: React.FC<StackingCardProps> = ({
               <EditableVisualSlot
                 slotKey={`${project.id}_top`}
                 defaultComponent={visuals.topVisual}
+                imageUrl={project.customVisuals ? project.col1TopImage : undefined}
                 onClick={() => onOpenProject(project)}
               />
             </div>
@@ -209,6 +211,7 @@ const StackingCard: React.FC<StackingCardProps> = ({
               <EditableVisualSlot
                 slotKey={`${project.id}_bottom`}
                 defaultComponent={visuals.bottomVisual}
+                imageUrl={project.customVisuals ? project.col1BottomImage : undefined}
                 onClick={() => onOpenProject(project)}
               />
             </div>
@@ -222,6 +225,7 @@ const StackingCard: React.FC<StackingCardProps> = ({
               <EditableVisualSlot
                 slotKey={`${project.id}_tall`}
                 defaultComponent={visuals.tallVisual}
+                imageUrl={project.customVisuals ? project.col2Image : undefined}
                 onClick={() => onOpenProject(project)}
               />
             </div>
@@ -238,6 +242,7 @@ interface ProjectsSectionProps {
 
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ onOpenProject }) => {
   const { t } = useLanguage();
+  const { content: PORTFOLIO_DATA } = useSiteContent();
   const [showAll, setShowAll] = useState(false);
   const featuredCount = 4;
   const projects = showAll ? PORTFOLIO_DATA.projects : PORTFOLIO_DATA.projects.slice(0, featuredCount);

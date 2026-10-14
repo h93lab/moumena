@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
-import { Camera } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { ContactButton } from '../common/Buttons';
-import { PORTFOLIO_DATA } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 import { useLanguage } from '../../context/LanguageContext';
 import heroPortraitImg from '../../assets/images/hero-portrait.webp';
 
@@ -15,16 +14,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onContactClick,
 }) => {
   const { lang, t } = useLanguage();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { content: PORTFOLIO_DATA } = useSiteContent();
   const canFollowPointer = useRef(false);
   const reduceMotion = useReducedMotion();
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
   const portraitX = useSpring(pointerX, { stiffness: 130, damping: 22 });
   const portraitY = useSpring(pointerY, { stiffness: 130, damping: 22 });
-  const [avatarSrc, setAvatarSrc] = useState<string>(() => {
-    return localStorage.getItem('moumena_avatar_custom') || heroPortraitImg;
-  });
+  const avatarSrc = PORTFOLIO_DATA.profile.avatarUrl || heroPortraitImg;
 
   useEffect(() => {
     const media = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1024px)');
@@ -54,21 +51,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const resetPointer = () => {
     pointerX.set(0);
     pointerY.set(0);
-  };
-
-  const handleCustomImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const resultStr = event.target.result as string;
-          setAvatarSrc(resultStr);
-          localStorage.setItem('moumena_avatar_custom', resultStr);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   return (
@@ -104,31 +86,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 fetchPriority="high"
                 alt={PORTFOLIO_DATA.profile.name}
                 referrerPolicy="no-referrer"
-                onError={() => {
-                  if (avatarSrc !== heroPortraitImg) {
-                    setAvatarSrc(heroPortraitImg);
-                  }
+                onError={(event) => {
+                  if (!event.currentTarget.src.endsWith(heroPortraitImg)) event.currentTarget.src = heroPortraitImg;
                 }}
                 className="w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.85)] filter contrast-105"
               />
 
-              {/* Upload image trigger button for instant replacement */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                title="Change Avatar Image"
-                aria-label="Change Avatar Image"
-                className="absolute bottom-6 right-4 sm:right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-[#D7E2EA] hover:text-white hover:border-[#B600A8] cursor-pointer shadow-lg"
-              >
-                <Camera className="w-4 h-4" />
-              </button>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCustomImageUpload}
-                className="hidden"
-              />
             </motion.div>
         </motion.div>
       </div>

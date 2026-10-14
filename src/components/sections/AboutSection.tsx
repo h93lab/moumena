@@ -2,7 +2,7 @@ import React from 'react';
 import { FadeIn } from '../common/FadeIn';
 import { AnimatedText } from '../common/AnimatedText';
 import { ContactButton } from '../common/Buttons';
-import { PORTFOLIO_DATA } from '../../data/portfolioData';
+import { useSiteContent } from '../../context/SiteContentContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface AboutSectionProps {
@@ -11,6 +11,7 @@ interface AboutSectionProps {
 
 export const AboutSection: React.FC<AboutSectionProps> = ({ onContactClick }) => {
   const { lang, t } = useLanguage();
+  const { content: PORTFOLIO_DATA } = useSiteContent();
 
   return (
     <section
