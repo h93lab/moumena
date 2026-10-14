@@ -42,6 +42,7 @@ export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [password, setPassword] = useState('');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [authBusy, setAuthBusy] = useState(false);
   const [tab, setTab] = useState<Tab>('projects');
   const [draft, setDraft] = useState<SiteContent | null>(null);
@@ -67,14 +68,18 @@ export default function AdminPage() {
     event.preventDefault(); setAuthBusy(true); setStatus('');
     const { error } = await supabase.auth.signInWithPassword({ email: ADMIN_EMAIL, password });
     setAuthBusy(false); setPassword('');
-    if (error) setStatus(error.message);
+    if (error) setStatus(error.code === 'invalid_credentials'
+      ? 'بيانات الدخول غير صحيحة. لو دي أول مرة، اختر «إنشاء الحساب لأول مرة» أولًا.'
+      : error.message);
   }
-  async function signUp() {
+  async function signUp(event: React.FormEvent) {
+    event.preventDefault();
     if (password.length < 8) { setStatus('اكتب كلمة مرور من 8 أحرف على الأقل.'); return; }
     setAuthBusy(true); setStatus('');
     const { error } = await supabase.auth.signUp({ email: ADMIN_EMAIL, password, options: { emailRedirectTo: `${window.location.origin}/admin` } });
     setAuthBusy(false); setPassword('');
-    setStatus(error ? error.message : `لو الحساب جديد، افتح رسالة التأكيد على ${ADMIN_EMAIL} ثم سجّل الدخول.`);
+    setStatus(error ? `تعذّر إنشاء الحساب: ${error.message}. راجع إعداد إرسال البريد في Supabase.`
+      : `تم طلب إنشاء الحساب. افتح رسالة التأكيد على ${ADMIN_EMAIL} ثم سجّل الدخول.`);
   }
   async function save() {
     if (!draft) return;
@@ -101,7 +106,7 @@ export default function AdminPage() {
   const rowActions = (index: number, length: number, onMove: (delta: number) => void, onRemove: () => void) => <div className="flex gap-1"><button className={buttonClass} disabled={index === 0} onClick={() => onMove(-1)} aria-label="حرّك لأعلى"><ArrowUp size={14} /></button><button className={buttonClass} disabled={index === length - 1} onClick={() => onMove(1)} aria-label="حرّك لأسفل"><ArrowDown size={14} /></button><button className={`${buttonClass} text-rose-300`} onClick={onRemove} aria-label="احذف"><Trash2 size={14} /></button></div>;
 
   if (!authReady) return <div className="min-h-screen bg-[#0C0C0C] p-8 text-slate-300">جارٍ التحقق من الدخول...</div>;
-  if (!authorized) return <main dir="rtl" className="flex min-h-screen items-center justify-center bg-[#0C0C0C] p-4 text-white"><div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#131318] p-7 shadow-2xl"><a href="/" className="text-xs text-fuchsia-400">← الموقع</a><h1 className="mt-5 text-2xl font-bold">لوحة تحكم مؤمنة</h1><p className="mt-2 text-sm text-slate-400">الدخول متاح فقط للبريد الإلكتروني المؤكد: {ADMIN_EMAIL}</p>{user && <p className="mt-4 text-sm text-amber-300">الحساب الحالي غير مصرح له. أكّد البريد الإلكتروني ثم سجّل الدخول.</p>}<form onSubmit={signIn} className="mt-6 space-y-4"><input className={fieldClass} value={ADMIN_EMAIL} disabled aria-label="البريد الإلكتروني" /><input className={fieldClass} type="password" minLength={8} placeholder="كلمة المرور" value={password} onChange={(e) => setPassword(e.target.value)} required /><button disabled={authBusy} className="w-full rounded-full bg-fuchsia-700 px-5 py-3 font-semibold hover:bg-fuchsia-600 disabled:opacity-50">دخول</button></form><button disabled={authBusy} onClick={() => void signUp()} className="mt-4 text-sm text-fuchsia-300 underline">إنشاء الحساب لأول مرة</button>{user && <button onClick={() => void supabase.auth.signOut()} className="mr-5 text-sm text-slate-400 underline">تسجيل الخروج</button>}{status && <p role="status" className="mt-4 text-sm text-amber-300">{status}</p>}</div></main>;
+  if (!authorized) return <main dir="rtl" className="flex min-h-screen items-center justify-center bg-[#0C0C0C] p-4 text-white"><div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#131318] p-7 shadow-2xl"><a href="/" className="text-xs text-fuchsia-400">← الموقع</a><h1 className="mt-5 text-2xl font-bold">{authMode === 'signup' ? 'إنشاء حساب الإدارة' : 'لوحة تحكم مؤمنة'}</h1><p className="mt-2 text-sm text-slate-400">{authMode === 'signup' ? `اختار كلمة مرور، ثم هنرسل رابط تأكيد إلى ${ADMIN_EMAIL}` : `الدخول متاح فقط للبريد الإلكتروني المؤكد: ${ADMIN_EMAIL}`}</p>{user && <p className="mt-4 text-sm text-amber-300">الحساب الحالي غير مصرح له. أكّد البريد الإلكتروني ثم سجّل الدخول.</p>}<form onSubmit={authMode === 'signup' ? signUp : signIn} className="mt-6 space-y-4"><input className={fieldClass} value={ADMIN_EMAIL} disabled aria-label="البريد الإلكتروني" /><input className={fieldClass} type="password" minLength={8} placeholder="كلمة المرور (8 أحرف على الأقل)" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} /><button type="submit" disabled={authBusy} className="w-full rounded-full bg-fuchsia-700 px-5 py-3 font-semibold hover:bg-fuchsia-600 disabled:opacity-50">{authBusy ? 'لحظة...' : authMode === 'signup' ? 'إنشاء الحساب وإرسال رابط التأكيد' : 'دخول'}</button></form><button type="button" disabled={authBusy} onClick={() => { setAuthMode(authMode === 'signin' ? 'signup' : 'signin'); setStatus(''); }} className="mt-4 text-sm text-fuchsia-300 underline">{authMode === 'signup' ? 'عندي حساب بالفعل — تسجيل الدخول' : 'إنشاء الحساب لأول مرة'}</button>{user && <button onClick={() => void supabase.auth.signOut()} className="mr-5 text-sm text-slate-400 underline">تسجيل الخروج</button>}{status && <p role="status" className="mt-4 text-sm text-amber-300">{status}</p>}</div></main>;
   if (!draft) return <div className="min-h-screen bg-[#0C0C0C] p-8 text-slate-300">جارٍ تحميل المحتوى...</div>;
 
   return <main dir="rtl" className="min-h-screen bg-[#0C0C0C] px-4 py-8 font-['Kanit',sans-serif] text-slate-200 sm:px-8"><div className="mx-auto max-w-6xl">
